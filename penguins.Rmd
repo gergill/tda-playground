@@ -109,9 +109,9 @@ penguin_ball_mapper[[1]]$gentoo_count = sapply(penguin_balls, function(penguin_b
 
 # count sexes in each vertex
 penguin_ball_mapper[[1]]$male_count = sapply(penguin_balls, function(penguin_ball)
-  sum(clean_penguins[row.names(penguin_ball), "sex"] == "M", na.rm = TRUE))
+  sum(clean_penguins[row.names(penguin_ball), "sex"] == "male", na.rm = TRUE))
 penguin_ball_mapper[[1]]$female_count = sapply(penguin_balls, function(penguin_ball)
-  sum(clean_penguins[row.names(penguin_ball), "sex"] == "F", na.rm = TRUE))
+  sum(clean_penguins[row.names(penguin_ball), "sex"] == "female", na.rm = TRUE))
 ```
 
 We'll use the `RCy3` package to send the graph data over to Cytoscape, a network analysis program which allows us to manipulate style parameters with a nice GUI. It's also possible to interface with it here; see the `RCy3` documentation for examples.
@@ -119,6 +119,9 @@ We'll use the `RCy3` package to send the graph data over to Cytoscape, a network
 ```{r}
 # This line requires a running instance of Cytoscape to execute!
 createNetworkFromDataFrames(penguin_ball_mapper[[1]], penguin_ball_mapper[[2]])
+# setVisualStyle('default')
+# setNodeColorDefault('#D8D8D8')
+# setNodeCustomPieChart(c("male_count", "femaie_count"))
 ```
 
 ![Initial Cytoscape Screen](initial_penguins.png)
