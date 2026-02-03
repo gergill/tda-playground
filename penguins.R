@@ -1,26 +1,27 @@
-library(mappeR)
-library(RCy3)
-library(igraph)
+library(colourvalues)
 
+# the penguins data set comes native in R
 clean_penguins = na.omit(penguins)
-clean_penguins$id = 1:nrow(clean_penguins)
+
+# only grab numerical columns
 penguin_numbers = subset(clean_penguins, select = c(bill_len, bill_dep, flipper_len, body_mass))
-normal_penguin_numbers = apply(penguin_numbers, 2, function(column) column/max(column))
-penguin_dists = dist(normal_penguin_numbers)
-penguin_ball_mapper = create_ball_mapper_object(clean_penguins, penguin_dists, .1)
-penguin_balls = lapply(penguin_ball_mapper[[1]]$data, function(x) clean_penguins[unlist(strsplit(x, ", ")),])
 
-penguin_ball_mapper[[1]]$average_bill_length = sapply(penguin_balls, function(penguin_ball) mean(clean_penguins[penguin_ball$id, "bill_len"]))
-penguin_ball_mapper[[1]]$average_bill_depth = sapply(penguin_balls, function(penguin_ball) mean(clean_penguins[penguin_ball$id, "bill_dep"]))
-penguin_ball_mapper[[1]]$average_flipper_length = sapply(penguin_balls, function(penguin_ball) mean(clean_penguins[penguin_ball$id, "flipper_len"]))
-penguin_ball_mapper[[1]]$average_body_mass = sapply(penguin_balls, function(penguin_ball) mean(clean_penguins[penguin_ball$id, "body_mass"]))
+# normalize columns
+normal_penguin_numbers = scale(penguin_numbers)
 
-penguin_ball_mapper[[1]]$biscoe_count = sapply(penguin_balls, function(penguin_ball) sum(clean_penguins[penguin_ball$id, "island"] == "Biscoe", na.rm = TRUE))
-penguin_ball_mapper[[1]]$dream_count = sapply(penguin_balls, function(penguin_ball) sum(clean_penguins[penguin_ball$id, "island"] == "Dream", na.rm = TRUE))
-penguin_ball_mapper[[1]]$torgersen_count = sapply(penguin_balls, function(penguin_ball) sum(clean_penguins[penguin_ball$id, "island"] == "Torgersen", na.rm = TRUE))
+# calculate distances
+penguin_dists = dist(normal_penguin_numbers, method = "euclidean")
 
-penguin_ball_mapper[[1]]$adelie_count = sapply(penguin_balls, function(penguin_ball) sum(clean_penguins[penguin_ball$id, "species"] == "Adelie", na.rm = TRUE))
-penguin_ball_mapper[[1]]$chinstrap_count = sapply(penguin_balls, function(penguin_ball) sum(clean_penguins[penguin_ball$id, "species"] == "Chinstrap", na.rm = TRUE))
-penguin_ball_mapper[[1]]$gentoo_count = sapply(penguin_balls, function(penguin_ball) sum(clean_penguins[penguin_ball$id, "species"] == "Gentoo", na.rm = TRUE))
+# calculate mds
+penguin_mds = cmdscale(penguin_dists)
 
-createNetworkFromDataFrames(penguin_ball_mapper[[1]], penguin_ball_mapper[[2]])
+# check how good our new distances correlate
+print(cor(dist(penguin_mds, method = "euclidean"), penguin_dists))
+
+# plot
+plot(penguin_mds, pch = 20)
+
+# plot, color by species
+plot(penguin_mds, pch = 20, col = colour_values(clean_penguins$species))
+plot(penguin_mds, pch = 20, col = colour_values(clean_penguins$island))
+
