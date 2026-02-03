@@ -25,6 +25,8 @@
 # RStudio files
 .Rproj.user/
 
+.Rproj
+
 .Rproj.user/DD4CB411/pcs/source-pane.pper
 
 # produced vignettes
