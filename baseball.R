@@ -1,7 +1,7 @@
 library(colourvalues)
 
 # pull data
-teams = read.csv("Teams.csv")
+teams = read.csv("data/Teams.csv")
 
 # strip irrelevant or bothersome stats
 teams = subset(teams, select = -c(lgID, divID, Ghome, DivWin, WCWin, WSWin, SB, CS, HBP, SF, attendance))
